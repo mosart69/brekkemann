@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Klikk på objektet med timer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            flex-direction: column;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .game-area {
+            position: relative;
+            width: 80%;
+            height: 80%;
+            background-color: #fff;
+            border: 2px solid #ccc;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .clickable-object {
+            width: 50px;
+            height: 50px;
+            background-color: #ff6347;
+            border-radius: 50%;
+            position: absolute;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .score-board, .timer-board {
+            margin-top: 20px;
+            font-size: 24px;
+            color: #333;
+        }
+
+        .game-over {
+            display: none;
+            font-size: 30px;
+            color: red;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Klikk på objektet!</h1>
+    <div class="game-area" id="gameArea">
+        <div class="clickable-object" id="clickableObject"></div>
+    </div>
+    <div class="score-board" id="scoreBoard">
+        Poeng: 0
+    </div>
+    <div class="timer-board" id="timerBoard">
+        Tid igjen: <span id="timer">30</span> sekunder
+    </div>
+    <div class="game-over" id="gameOverMessage">
+        Spillet er over! Din poengsum: <span id="finalScore"></span>
+    </div>
+
+    <script>
+        // Spillvariabler
+        let score = 0;
+        let gameTime = 30; // Spilletid i sekunder
+        let clickableObject = document.getElementById('clickableObject');
+        let gameArea = document.getElementById('gameArea');
+        let scoreBoard = document.getElementById('scoreBoard');
+        let timerBoard = document.getElementById('timerBoard');
+        let timerElement = document.getElementById('timer');
+        let gameOverMessage = document.getElementById('gameOverMessage');
+        let finalScore = document.getElementById('finalScore');
+        let gameOver = false;
+
+        // Funksjon for å flytte objektet til et tilfeldig sted
+        function moveObject() {
+            let maxX = gameArea.clientWidth - clickableObject.offsetWidth;
+            let maxY = gameArea.clientHeight - clickableObject.offsetHeight;
+            let randomX = Math.random() * maxX;
+            let randomY = Math.random() * maxY;
+
+            clickableObject.style.left = randomX + 'px';
+            clickableObject.style.top = randomY + 'px';
+        }
+
+        // Event listener for å registrere klikk
+        clickableObject.addEventListener('click', function() {
+            if (!gameOver) {
+                score++;  // Øk poengsummen
+                scoreBoard.textContent = 'Poeng: ' + score;  // Oppdater poengsummen
+                moveObject();  // Flytt objektet til et nytt tilfeldig sted
+            }
+        });
+
+        // Funksjon for å starte timeren
+        function startTimer() {
+            let timerInterval = setInterval(function() {
+                if (gameTime > 0 && !gameOver) {
+                    gameTime--;  // Reduser tid
+                    timerElement.textContent = gameTime;  // Oppdater timeren
+                } else {
+                    clearInterval(timerInterval);  // Stopp timeren når tiden er ute
+                    gameOver = true;
+                    gameOverMessage.style.display = 'block';  // Vis game over-melding
+                    finalScore.textContent = score;  // Vis den endelige poengsummen
+                    clickableObject.style.display = 'none';  // Skjul objektet
+                }
+            }, 1000);
+        }
+
+        // Start spillet og timeren
+        moveObject();  // Flytt objektet første gang
+        startTimer();  // Start timeren
+
+    </script>
+
+</body>
+</html>
+npm install -g firebase-tools
+firebase login
