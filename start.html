@@ -57,13 +57,29 @@
             color: red;
             margin-top: 20px;
         }
+
+        .restart-button {
+            padding: 15px 30px;
+            background-color: #007bff;
+            color: white;
+            font-size: 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: none;
+            margin-top: 20px;
+        }
+
+        .restart-button:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 <body>
 
     <h1>Klikk på objektet!</h1>
     <div class="game-area" id="gameArea">
-        <div class="clickable-object" id="clickableObject"></div>
+        <!-- Flere objekter vil bli lagt til her dynamisk -->
     </div>
     <div class="score-board" id="scoreBoard">
         Poeng: 0
@@ -74,39 +90,51 @@
     <div class="game-over" id="gameOverMessage">
         Spillet er over! Din poengsum: <span id="finalScore"></span>
     </div>
+    <button class="restart-button" id="restartButton" onclick="restartGame()">Start på nytt</button>
 
     <script>
         // Spillvariabler
         let score = 0;
         let gameTime = 30; // Spilletid i sekunder
-        let clickableObject = document.getElementById('clickableObject');
         let gameArea = document.getElementById('gameArea');
         let scoreBoard = document.getElementById('scoreBoard');
         let timerBoard = document.getElementById('timerBoard');
         let timerElement = document.getElementById('timer');
         let gameOverMessage = document.getElementById('gameOverMessage');
         let finalScore = document.getElementById('finalScore');
+        let restartButton = document.getElementById('restartButton');
         let gameOver = false;
+        let numberOfObjects = 5;  // Antall objekter på skjermen
+
+        // Funksjon for å lage et nytt klikkbart objekt
+        function createClickableObject() {
+            let clickableObject = document.createElement('div');
+            clickableObject.classList.add('clickable-object');
+            gameArea.appendChild(clickableObject);
+
+            // Flytt objektet til et tilfeldig sted
+            moveObject(clickableObject);
+
+            // Event listener for å registrere klikk på objektet
+            clickableObject.addEventListener('click', function() {
+                if (!gameOver) {
+                    score++;  // Øk poengsummen
+                    scoreBoard.textContent = 'Poeng: ' + score;  // Oppdater poengsummen
+                    moveObject(clickableObject);  // Flytt objektet til et nytt tilfeldig sted
+                }
+            });
+        }
 
         // Funksjon for å flytte objektet til et tilfeldig sted
-        function moveObject() {
-            let maxX = gameArea.clientWidth - clickableObject.offsetWidth;
-            let maxY = gameArea.clientHeight - clickableObject.offsetHeight;
+        function moveObject(object) {
+            let maxX = gameArea.clientWidth - object.offsetWidth;
+            let maxY = gameArea.clientHeight - object.offsetHeight;
             let randomX = Math.random() * maxX;
             let randomY = Math.random() * maxY;
 
-            clickableObject.style.left = randomX + 'px';
-            clickableObject.style.top = randomY + 'px';
+            object.style.left = randomX + 'px';
+            object.style.top = randomY + 'px';
         }
-
-        // Event listener for å registrere klikk
-        clickableObject.addEventListener('click', function() {
-            if (!gameOver) {
-                score++;  // Øk poengsummen
-                scoreBoard.textContent = 'Poeng: ' + score;  // Oppdater poengsummen
-                moveObject();  // Flytt objektet til et nytt tilfeldig sted
-            }
-        });
 
         // Funksjon for å starte timeren
         function startTimer() {
@@ -119,18 +147,36 @@
                     gameOver = true;
                     gameOverMessage.style.display = 'block';  // Vis game over-melding
                     finalScore.textContent = score;  // Vis den endelige poengsummen
-                    clickableObject.style.display = 'none';  // Skjul objektet
+                    let clickableObjects = document.querySelectorAll('.clickable-object');
+                    clickableObjects.forEach(obj => obj.style.display = 'none');  // Skjul alle objektene
+                    restartButton.style.display = 'block';  // Vis "Start på nytt"-knappen
                 }
             }, 1000);
         }
 
-        // Start spillet og timeren
-        moveObject();  // Flytt objektet første gang
-        startTimer();  // Start timeren
+        // Funksjon for å starte spillet på nytt
+        function restartGame() {
+            score = 0;
+            gameTime = 30;
+            scoreBoard.textContent = 'Poeng: ' + score;
+            timerElement.textContent = gameTime;
+            gameOver = false;
+            gameOverMessage.style.display = 'none';
+            restartButton.style.display = 'none';
+            gameArea.innerHTML = ''; // Fjern eksisterende objekter
+            for (let i = 0; i < numberOfObjects; i++) {
+                createClickableObject();  // Lag flere objekter
+            }
+            startTimer();  // Start timeren på nytt
+        }
 
+        // Start spillet og timeren
+        for (let i = 0; i < numberOfObjects; i++) {
+            createClickableObject();  // Lag flere objekter
+        }
+
+        startTimer();  // Start timeren
     </script>
 
 </body>
 </html>
-npm install -g firebase-tools
-firebase login
